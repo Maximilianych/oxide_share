@@ -42,36 +42,69 @@ impl App {
     }
     
     pub async fn run_app(&mut self) -> Result<(), Error>{
-        let mut terminal = self.terminal.as_mut().unwrap();
-        
+        let mut terminal = self.terminal.take().unwrap();
+
         loop {
             match self.role {
                 Role::None => {
                     terminal.draw(|f| {
                         let size = f.size();
-                        let block = Block::default().title("Main Block").borders(Borders::ALL);
+                        let block = Block::default().title("None Role").borders(Borders::ALL);
                         f.render_widget(block, size);
                     })?;
             
                     if event::poll(std::time::Duration::from_millis(200))? {
                         if let Event::Key(key) = event::read()? {
-                            if key.code == KeyCode::Char('q') {
-                                break
+                            match key.code {
+                                KeyCode::Char('q') => break,
+                                KeyCode::Char('a') => self.set_role(Role::Server),
+                                KeyCode::Char('b') => self.set_role(Role::Client),
+                                _ => {}
                             }
                         }
                     }
                 }
+
                 Role::Server => {
-                    todo!()
+                    terminal.draw(|f| {
+                        let size = f.size();
+                        let block = Block::default().title("Server Role").borders(Borders::ALL);
+                        f.render_widget(block, size);
+                    })?;
+
+                    if event::poll(std::time::Duration::from_millis(200))? {
+                        if let Event::Key(key) = event::read()? {
+                            match key.code {
+                                KeyCode::Char('q') => self.set_role(Role::None),
+                                _ => {}
+                            }
+                        }
+                    }
                 }
+
                 Role::Client => {
-                    todo!()
+                    terminal.draw(|f| {
+                        let size = f.size();
+                        let block = Block::default().title("Client Role").borders(Borders::ALL);
+                        f.render_widget(block, size);
+                    })?;
+
+                    if event::poll(std::time::Duration::from_millis(200))? {
+                        if let Event::Key(key) = event::read()? {
+                            match key.code {
+                                KeyCode::Char('q') => self.set_role(Role::None),
+                                _ => {}
+                            }
+                        }
+                    }
                 }
             }
         }
 
+        self.terminal = Some(terminal);
         Ok(())
     }
+
 }
 
 /// An enumeration of the roles the application can play
