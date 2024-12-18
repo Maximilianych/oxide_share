@@ -15,16 +15,11 @@ use crossterm::{
     execute,
 };
 
-use thiserror::Error;
-
 mod app;
 use app::App;
 
-#[derive(Error, Debug)]
-enum Error {
-    #[error("I/O error: {0}")]
-    IoError(#[from] std::io::Error),
-}
+mod error;
+use error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
