@@ -39,8 +39,8 @@ impl App {
         // tui for choosing role
         todo!()
     }
-    
-    pub async fn run_app(&mut self) -> Result<(), Error>{
+
+    async fn tui_render(&mut self,) -> Result<(), Error> {
         let mut terminal = self.terminal.take().unwrap();
 
         let options = vec!["Server", "Client", "Quit"];
@@ -126,6 +126,13 @@ impl App {
 
         self.terminal = Some(terminal);
         Ok(())
+    }
+    
+    pub async fn run_app(&mut self) -> Result<(), Error> {
+        // TODO: make async
+        
+        self.tui_render().await
+
     }
 
 }
